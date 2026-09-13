@@ -1,5 +1,6 @@
 import express from 'express';
 import projectsRouter from './routes/projects.routes.js';
+import tasksRouter from './routes/tasks.routes.js';
 import { notFoundHandler } from './middleware/notFoundHandler.js';
 import { errorHandler } from './middleware/errorHandler.js';
 
@@ -12,6 +13,7 @@ app.get('/health', (req, res) => {
 });
 
 app.use('/api/v1/projects', projectsRouter);
+app.use('/api/v1/tasks', tasksRouter);
 
 app.use(notFoundHandler);
 app.use(errorHandler);

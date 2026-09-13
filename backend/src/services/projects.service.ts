@@ -1,71 +1,52 @@
-import {randomUUID} from 'crypto';
-import {Project} from '../types/models.js';
+import { prisma } from '../config/prisma.js';
+import { Project, ProjectStatus } from '@prisma/client';
 
-const projects: Project[] =[];
-
-export function getAllProjects(): Project[] {
-    return projects;
+export async function getAllProjects(): Promise<Project[]> {
+  return prisma.project.findMany();
 }
 
-
-interface CreateProjectData{
-    name: string;
-    description: string;
+export async function getProjectById(id: string): Promise<Project | null> {
+  return prisma.project.findUnique({ where: { id } });
 }
 
-export function getProjectById(id: string): Project | undefined {
-    return projects.find((project) => project.id === id);
+interface CreateProjectData {
+  name: string;
+  description: string;
+  ownerId: string;
 }
 
+export async function createProject(data: CreateProjectData): Promise<Project> {
+  return prisma.project.create({
+    data: {
+      name: data.name,
+      description: data.description,
+      ownerId: data.ownerId,
+    },
+  });
+}
 
 interface UpdateProjectData {
-    name?: string;
-    description?:string;
+  name?: string;
+  description?: string;
+  status?: ProjectStatus;
 }
 
-export function updateProject(id:string,data: UpdateProjectData) : Project | undefined {
-
-    const project =projects.find((p) => p.id === id);
-    if (!project){
-        return undefined;
-    }
-    if(data.name !== undefined){
-        project.name = data.name;
-    }
-    if(data.description !== undefined){
-        project.description = data.description;
-    }
-    project.updatedAt = new Date();
-    return project;
-
+export async function updateProject(
+  id: string,
+  data: UpdateProjectData
+): Promise<Project | null> {
+  try {
+    return await prisma.project.update({ where: { id }, data });
+  } catch {
+    return null;
+  }
 }
 
-export function deleteProject(id: string): boolean{
-    const index = projects.findIndex((p) => p.id === id)
-    if(index === -1) return false;
-
-    projects.splice(index,1);
+export async function deleteProject(id: string): Promise<boolean> {
+  try {
+    await prisma.project.delete({ where: { id } });
     return true;
+  } catch {
+    return false;
+  }
 }
-
-export function createProject(data: CreateProjectData): Project {
-    const newProject: Project = {
-        id: randomUUID(),
-        name: data.name,
-        description: data.description,
-        status: 'active',
-        ownerId: 'temp-owner-id', // Placeholder for the owner ID
-        createdAt: new Date(),
-        updatedAt: new Date(),
-    };
-
-    
-    
-
-    projects.push(newProject);
-    return newProject;
-
-    
-
-
-    };

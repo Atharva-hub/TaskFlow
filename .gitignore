@@ -13,6 +13,12 @@ build/
 *.log
 npm-debug.log*
 
+# AI tool local config
+.claude/
+.cursor/
+.devin/
+.agents/
+
 # OS / editor junk
 .DS_Store
 .vscode/
