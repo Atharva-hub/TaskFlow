@@ -96,7 +96,7 @@ Then fill in `.env` — see the [Environment variables](#environment-variables) 
 npx prisma migrate deploy
 npx prisma db seed
 ```
-This creates the schema and adds a demo user, project, and task so the app isn't empty on first run.
+This creates the schema and adds a demo user, project, and two tasks so the app isn't empty on first run. Demo login: `demo@taskflow.dev` / `DemoPass123!`.
 
 ### 5. Start the server
 ```bash
@@ -104,7 +104,7 @@ npm run dev
 ```
 API is now running at `http://localhost:3000`. Confirm with:
 ```bash
-curl http://localhost:3000/health
+curl http://localhost:3000/api/v1/health
 ```
 
 ### Running tests
@@ -132,6 +132,7 @@ npm start
 | `DATABASE_URL`    | PostgreSQL connection string                      | `postgresql://user:pass@localhost:5432/taskflow?schema=public`|
 | `JWT_SECRET`      | Secret used to sign auth tokens (generate a long random string, never reuse the example) | — |
 | `JWT_EXPIRES_IN`  | How long a token stays valid                      | `1h`                                                           |
+| `CORS_ORIGIN`     | Origin allowed to call the API (the frontend's URL) | `http://localhost:5173`                                      |
 
 ## API summary
 
