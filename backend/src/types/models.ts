@@ -1,6 +1,16 @@
+import { User as PrismaUser } from '@prisma/client';
+
+
 export type TaskStatus = 'todo' | 'in-progress' | 'done';
 export type TaskPriority = 'low' | 'medium' | 'high';
 export type ProjectStatus = 'active' | 'archived';
+
+export type PublicUser = Omit<PrismaUser, 'passwordHash'>;
+
+export function toPublicUser(user: PrismaUser): PublicUser {
+  const { passwordHash, ...publicUser } = user;
+  return publicUser;
+}
 
 export interface User {
   id: string;
