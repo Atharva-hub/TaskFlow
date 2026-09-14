@@ -13,6 +13,7 @@ export function Layout() {
 
   return (
     <div className="app-shell">
+      <a href="#main-content" className="skip-link">Skip to main content</a>
       <header className="app-header">
         <div className="app-header-inner">
           <span className="app-logo">TaskFlow</span>
@@ -33,7 +34,7 @@ export function Layout() {
           </div>
         </div>
       </header>
-      <main className="app-main">
+      <main className="app-main" id="main-content">
         <Outlet />
       </main>
     </div>

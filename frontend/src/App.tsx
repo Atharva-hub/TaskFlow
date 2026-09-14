@@ -6,10 +6,7 @@ import { Layout } from './components/common/Layout';
 import { ProjectsPage } from './pages/ProjectsPage';
 import { ProjectDetailPage } from './pages/ProjectDetailPage';
 import { TasksPage } from './pages/TasksPage';
-
-function DashboardPlaceholder() {
-  return <div>Dashboard coming in Lesson 5.</div>;
-}
+import { DashboardPage } from './pages/DashboardPage';
 
 function App() {
   return (
@@ -18,7 +15,7 @@ function App() {
       <Route path="/register" element={<RegisterPage />} />
 
       <Route element={<ProtectedRoute><Layout /></ProtectedRoute>}>
-        <Route path="/dashboard" element={<DashboardPlaceholder />} />
+        <Route path="/dashboard" element={<DashboardPage />} />
         <Route path="/projects" element={<ProjectsPage />} />
         <Route path="/projects/:id" element={<ProjectDetailPage />} />
         <Route path="/tasks" element={<TasksPage />} />
