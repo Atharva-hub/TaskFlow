@@ -29,7 +29,11 @@ export function validateQuery(schema: ZodSchema) {
       throw new AppError(message, 400);
     }
 
-    req.query = result.data as typeof req.query;
+    Object.defineProperty(req, 'query', {
+      value: result.data,
+      writable: true,
+      configurable: true,
+    });
     next();
   };
 }
