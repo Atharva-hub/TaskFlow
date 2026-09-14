@@ -5,11 +5,72 @@ import {
   createTask,
   updateTask,
   deleteTask,
+  TaskFilters,
 } from '../services/tasks.service.js';
 import { getProjectById } from '../services/projects.service.js';
 import { AppError } from '../utils/AppError.js';
 import { asyncHandler } from '../utils/asyncHandler.js';
 import { TaskStatus, TaskPriority } from '@prisma/client';
+
+const VALID_STATUSES: TaskStatus[] = ['TODO', 'IN_PROGRESS', 'DONE'];
+const VALID_PRIORITIES: TaskPriority[] = ['LOW', 'MEDIUM', 'HIGH'];
+const VALID_SORT_FIELDS = ['dueDate', 'createdAt', 'priority', 'title'] as const;
+const VALID_ORDERS = ['asc', 'desc'] as const;
+
+interface TaskQueryParams {
+  status?: string;
+  priority?: string;
+  sortBy?: string;
+  order?: string;
+}
+
+export const handleGetAllTasks = asyncHandler(async (
+  req: Request<{}, {}, {}, TaskQueryParams>,
+  res: Response
+) => {
+  const { status, priority, sortBy, order } = req.query;
+  const filters: TaskFilters = {};
+
+  if (status !== undefined) {
+    if (!VALID_STATUSES.includes(status as TaskStatus)) {
+      throw new AppError(`Invalid status: ${status}`, 400);
+    }
+    filters.status = status as TaskStatus;
+  }
+
+  if (priority !== undefined) {
+    if (!VALID_PRIORITIES.includes(priority as TaskPriority)) {
+      throw new AppError(`Invalid priority: ${priority}`, 400);
+    }
+    filters.priority = priority as TaskPriority;
+  }
+
+  if (sortBy !== undefined) {
+    if (!VALID_SORT_FIELDS.includes(sortBy as typeof VALID_SORT_FIELDS[number])) {
+      throw new AppError(`Invalid sortBy: ${sortBy}`, 400);
+    }
+    filters.sortBy = sortBy as TaskFilters['sortBy'];
+  }
+
+  if (order !== undefined) {
+    if (!VALID_ORDERS.includes(order as typeof VALID_ORDERS[number])) {
+      throw new AppError(`Invalid order: ${order}`, 400);
+    }
+    filters.order = order as TaskFilters['order'];
+  }
+
+  const ownerId = req.user!.userId;
+  const tasks = await getAllTasks(ownerId, filters);
+  res.json(tasks);
+});
+
+export const handleGetTaskById = asyncHandler(async (
+  req: Request<{ id: string }>,
+  res: Response
+) => {
+  const task = await assertTaskAccess(req.params.id, req.user!.userId);
+  res.json(task);
+});
 
 async function assertTaskAccess(taskId: string, userId: string) {
   const task = await getTaskById(taskId);
@@ -24,23 +85,6 @@ async function assertTaskAccess(taskId: string, userId: string) {
 
   return task;
 }
-
-export const handleGetAllTasks = asyncHandler(async (
-  req: Request,
-  res: Response
-) => {
-  const ownerId = req.user!.userId;
-  const tasks = await getAllTasks(ownerId);
-  res.json(tasks);
-});
-
-export const handleGetTaskById = asyncHandler(async (
-  req: Request<{ id: string }>,
-  res: Response
-) => {
-  const task = await assertTaskAccess(req.params.id, req.user!.userId);
-  res.json(task);
-});
 
 interface CreateTaskBody {
   title: string;

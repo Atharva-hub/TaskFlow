@@ -1,10 +1,31 @@
 import { prisma } from '../config/prisma.js';
-import { Task, TaskStatus, TaskPriority } from '@prisma/client';
+import { Task, TaskStatus, TaskPriority, Prisma } from '@prisma/client';
 
-export async function getAllTasks(ownerId: string): Promise<Task[]> {
-  return prisma.task.findMany({
-    where: { project: { ownerId } },
-  });
+export interface TaskFilters {
+  status?: TaskStatus;
+  priority?: TaskPriority;
+  sortBy?: 'dueDate' | 'createdAt' | 'priority' | 'title';
+  order?: 'asc' | 'desc';
+}
+
+export async function getAllTasks(
+  ownerId: string,
+  filters: TaskFilters = {}
+): Promise<Task[]> {
+  const where: Prisma.TaskWhereInput = { project: { ownerId } };
+
+  if (filters.status) {
+    where.status = filters.status;
+  }
+  if (filters.priority) {
+    where.priority = filters.priority;
+  }
+
+  const orderBy: Prisma.TaskOrderByWithRelationInput | undefined = filters.sortBy
+    ? { [filters.sortBy]: filters.order ?? 'asc' }
+    : { createdAt: 'desc' };
+
+  return prisma.task.findMany({ where, orderBy });
 }
 
 export async function getTaskById(id: string): Promise<Task | null> {
