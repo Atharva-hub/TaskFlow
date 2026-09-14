@@ -1,3 +1,32 @@
+## Frontend setup
+
+### 1. Install
+```bash
+cd frontend
+npm install
+```
+
+### 2. Configure environment
+```bash
+cp .env.example .env
+```
+`VITE_API_URL` should point at your running backend (default `http://localhost:3000/api/v1`).
+
+### 3. Run
+```bash
+npm run dev
+```
+Opens at `http://localhost:5173`. The backend must be running separately (see above) — the frontend makes real API calls to it.
+
+### Running frontend tests
+```bash
+npm test
+```
+
+### Production build
+```bash
+npm run build
+```
 # TaskFlow
 
 A full stack task and project management platform for small teams, built as a technical assessment for Genpact (Applicant ID: GP-FS-26147).
@@ -131,3 +160,5 @@ Full request/response examples: import `backend/docs/postman_collection.json` an
 - **No refresh tokens.** JWTs expire after 1 hour (`JWT_EXPIRES_IN`) with no renewal flow — users must log in again after expiry. A reasonable, explicit trade-off for this assignment's scope rather than an oversight.
 - **No rate limiting** on auth endpoints (e.g. brute-force login attempts). Would add `express-rate-limit` in a production system.
 - **No pagination** on `GET /projects` or `GET /tasks` — acceptable at small-team scale, but would need `?page=`/`?limit=` for larger datasets.
+- **JWT stored in localStorage**, not an httpOnly cookie — simpler to implement given the timeline, but means the token is readable by any JavaScript running on the page. A production system would use httpOnly cookies to mitigate XSS-based token theft.
+- **Project detail view groups tasks by project client-side** rather than via a dedicated `?projectId=` query param — acceptable at small-team task volumes.

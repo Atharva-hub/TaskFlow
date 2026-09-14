@@ -23,3 +23,9 @@ Authentication (is this a valid, logged-in user?) is deliberately separated from
 ## Notable constraints
 
 Built under a fixed short deadline; prioritized functional completeness and correctness of the required stack over additional features (e.g. rate limiting, pagination) not explicitly required by the brief. See README "Known limitations" for the current, up-to-date list.
+
+## Frontend architecture
+
+The frontend mirrors the backend's layered discipline: a typed API client (`src/api/`) wraps every backend endpoint behind a single generic `apiRequest<T>` function; custom hooks (`useProjects`, `useTasks`, `useDashboardStats`) own data-fetching and local state, keeping page components focused purely on layout and user interaction. `AuthContext` centralizes login state and JWT storage so any component can read `user`/`token` without prop drilling, and `ProtectedRoute` mirrors the backend's `authMiddleware` — same responsibility, same branching logic, expressed as a routing guard instead of Express middleware.
+
+Frontend tests use React Testing Library with mocked auth/API responses rather than hitting the real backend, unlike the backend's own integration tests against a real database. This is a deliberate, opposite trade-off to the backend's: component tests are verifying rendering and event-handling logic, which doesn't need real network or database state, and keeping them independent of a running backend keeps them fast and reliable to run in isolation.
