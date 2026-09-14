@@ -14,7 +14,8 @@ export const handleGetAllProjects = asyncHandler(async (
   req: Request,
   res: Response
 ) => {
-  const projects = await getAllProjects();
+  const ownerId = req.user!.userId;
+  const projects = await getAllProjects(ownerId);
   res.json(projects);
 });
 
@@ -42,6 +43,9 @@ export const handleGetProjectById = asyncHandler(async (
   if (!project) {
     throw new AppError('Project not found', 404);
   }
+  if (project.ownerId !== req.user!.userId) {
+    throw new AppError('You do not have access to this project', 403);
+  }
 
   res.json(project);
 });
@@ -56,12 +60,16 @@ export const handleUpdateProject = asyncHandler(async (
   req: Request<{ id: string }, {}, UpdateProjectBody>,
   res: Response
 ) => {
-  const project = await updateProject(req.params.id, req.body);
+  const existing = await getProjectById(req.params.id);
 
-  if (!project) {
+  if (!existing) {
     throw new AppError('Project not found', 404);
   }
+  if (existing.ownerId !== req.user!.userId) {
+    throw new AppError('You do not have access to this project', 403);
+  }
 
+  const project = await updateProject(req.params.id, req.body);
   res.json(project);
 });
 
@@ -69,11 +77,15 @@ export const handleDeleteProject = asyncHandler(async (
   req: Request<{ id: string }>,
   res: Response
 ) => {
-  const wasDeleted = await deleteProject(req.params.id);
+  const existing = await getProjectById(req.params.id);
 
-  if (!wasDeleted) {
+  if (!existing) {
     throw new AppError('Project not found', 404);
   }
+  if (existing.ownerId !== req.user!.userId) {
+    throw new AppError('You do not have access to this project', 403);
+  }
 
+  await deleteProject(req.params.id);
   res.status(204).send();
 });

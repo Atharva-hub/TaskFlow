@@ -1,8 +1,8 @@
 import { prisma } from '../config/prisma.js';
 import { Project, ProjectStatus } from '@prisma/client';
 
-export async function getAllProjects(): Promise<Project[]> {
-  return prisma.project.findMany();
+export async function getAllProjects(ownerId: string): Promise<Project[]> {
+  return prisma.project.findMany({ where: { ownerId } });
 }
 
 export async function getProjectById(id: string): Promise<Project | null> {

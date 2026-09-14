@@ -1,8 +1,10 @@
 import { prisma } from '../config/prisma.js';
 import { Task, TaskStatus, TaskPriority } from '@prisma/client';
 
-export async function getAllTasks(): Promise<Task[]> {
-  return prisma.task.findMany();
+export async function getAllTasks(ownerId: string): Promise<Task[]> {
+  return prisma.task.findMany({
+    where: { project: { ownerId } },
+  });
 }
 
 export async function getTaskById(id: string): Promise<Task | null> {
