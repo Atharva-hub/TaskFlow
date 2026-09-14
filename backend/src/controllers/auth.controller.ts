@@ -4,24 +4,13 @@ import { toPublicUser } from '../types/models.js';
 import { AppError } from '../utils/AppError.js';
 import { asyncHandler } from '../utils/asyncHandler.js';
 import { signToken } from '../utils/jwt.js';
-
-interface RegisterBody {
-  email: string;
-  password: string;
-}
+import { RegisterInput, LoginInput } from '../validation/auth.schema.js';
 
 export const handleRegister = asyncHandler(async (
-  req: Request<{}, {}, RegisterBody>,
+  req: Request<{}, {}, RegisterInput>,
   res: Response
 ) => {
   const { email, password } = req.body;
-
-  if (!email || !password) {
-    throw new AppError('Email and password are required', 400);
-  }
-  if (password.length < 8) {
-    throw new AppError('Password must be at least 8 characters', 400);
-  }
 
   const existing = await findUserByEmail(email);
   if (existing) {
@@ -32,20 +21,11 @@ export const handleRegister = asyncHandler(async (
   res.status(201).json(toPublicUser(user));
 });
 
-interface LoginBody {
-  email: string;
-  password: string;
-}
-
 export const handleLogin = asyncHandler(async (
-  req: Request<{}, {}, LoginBody>,
+  req: Request<{}, {}, LoginInput>,
   res: Response
 ) => {
   const { email, password } = req.body;
-
-  if (!email || !password) {
-    throw new AppError('Email and password are required', 400);
-  }
 
   const user = await findUserByEmail(email);
   if (!user) {
@@ -58,9 +38,5 @@ export const handleLogin = asyncHandler(async (
   }
 
   const token = signToken({ userId: user.id });
-
-  res.json({
-    user: toPublicUser(user),
-    token,
-  });
+  res.json({ user: toPublicUser(user), token });
 });
