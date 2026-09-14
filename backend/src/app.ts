@@ -5,12 +5,15 @@ import tasksRouter from './routes/tasks.routes.js';
 import dashboardRouter from './routes/dashboard.routes.js';
 import { notFoundHandler } from './middleware/notFoundHandler.js';
 import { errorHandler } from './middleware/errorHandler.js';
+import cors from 'cors';
+import { env } from './config/env.js';
 
 const app = express();
+app.use(cors({ origin: env.corsOrigin, credentials: true }));
 
 app.use(express.json());
 
-app.get('/health', (req, res) => {
+app.get('/api/v1/health', (req, res) => {
   res.json({ status: 'Server is running' });
 });
 

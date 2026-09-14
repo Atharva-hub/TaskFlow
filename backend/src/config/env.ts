@@ -14,4 +14,5 @@ export const env = {
   databaseUrl: getEnvVar('DATABASE_URL'),
   jwtSecret: getEnvVar('JWT_SECRET'),
   jwtExpiresIn: getEnvVar('JWT_EXPIRES_IN'),
+  corsOrigin: getEnvVar('CORS_ORIGIN'),
 };
