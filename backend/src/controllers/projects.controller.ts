@@ -28,9 +28,8 @@ export const handleCreateProject = asyncHandler(async (
   res: Response
 ) => {
   const { name, description } = req.body;
-  // TODO: replace with req.user.id once auth middleware exists (Lesson 7)
-  const TEMP_OWNER_ID = process.env.TEMP_OWNER_ID as string;
-  const project = await createProject({ name, description, ownerId: TEMP_OWNER_ID });
+  const ownerId = req.user!.userId;
+  const project = await createProject({ name, description, ownerId });
   res.status(201).json(project);
 });
 

@@ -11,4 +11,7 @@ function getEnvVar(key: string): string {
 export const env = {
   port: Number(getEnvVar('PORT')),
   nodeEnv: getEnvVar('NODE_ENV'),
+  databaseUrl: getEnvVar('DATABASE_URL'),
+  jwtSecret: getEnvVar('JWT_SECRET'),
+  jwtExpiresIn: getEnvVar('JWT_EXPIRES_IN'),
 };

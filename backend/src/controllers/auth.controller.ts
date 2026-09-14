@@ -3,6 +3,7 @@ import { createUser, findUserByEmail, verifyPassword } from '../services/users.s
 import { toPublicUser } from '../types/models.js';
 import { AppError } from '../utils/AppError.js';
 import { asyncHandler } from '../utils/asyncHandler.js';
+import { signToken } from '../utils/jwt.js';
 
 interface RegisterBody {
   email: string;
@@ -56,6 +57,10 @@ export const handleLogin = asyncHandler(async (
     throw new AppError('Invalid email or password', 401);
   }
 
- 
-  res.json(toPublicUser(user));
+  const token = signToken({ userId: user.id });
+
+  res.json({
+    user: toPublicUser(user),
+    token,
+  });
 });
