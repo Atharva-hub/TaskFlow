@@ -1,24 +1,27 @@
-import { useEffect, useState } from 'react';
-import { apiRequest } from './api/client';
+import { Routes, Route, Navigate } from 'react-router-dom';
+import { LoginPage } from './pages/LoginPage';
+import { RegisterPage } from './pages/RegisterPage';
+import { ProtectedRoute } from './routes/ProtectedRoute';
 
-interface HealthResponse {
-  status: string;
+function DashboardPlaceholder() {
+  return <div style={{ padding: '2rem' }}>Dashboard coming in Lesson 5.</div>;
 }
 
 function App() {
-  const [status, setStatus] = useState<string>('checking...');
-
-  useEffect(() => {
-    apiRequest<HealthResponse>('/health')
-      .then((res) => setStatus(res.status))
-      .catch(() => setStatus('unreachable'));
-  }, []);
-
   return (
-    <div>
-      <h1>TaskFlow</h1>
-      <p>API status: {status}</p>
-    </div>
+    <Routes>
+      <Route path="/login" element={<LoginPage />} />
+      <Route path="/register" element={<RegisterPage />} />
+      <Route
+        path="/dashboard"
+        element={
+          <ProtectedRoute>
+            <DashboardPlaceholder />
+          </ProtectedRoute>
+        }
+      />
+      <Route path="/" element={<Navigate to="/dashboard" replace />} />
+    </Routes>
   );
 }
 
