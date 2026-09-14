@@ -54,7 +54,7 @@ export function LoginPage() {
           autoComplete="current-password"
         />
 
-        <button type="submit" disabled={isSubmitting}>
+        <button type="submit" className="btn btn-primary" disabled={isSubmitting}>
           {isSubmitting ? 'Logging in...' : 'Log in'}
         </button>
 

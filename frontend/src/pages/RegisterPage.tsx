@@ -56,7 +56,7 @@ export function RegisterPage() {
         />
         <p className="field-hint">At least 8 characters</p>
 
-        <button type="submit" disabled={isSubmitting}>
+        <button type="submit" className="btn btn-primary" disabled={isSubmitting}>
           {isSubmitting ? 'Creating account...' : 'Register'}
         </button>
 
